@@ -1,0 +1,54 @@
+name: Dev to Staging Auto-Merge
+
+on:
+  push:
+    branches:
+      - 'dev/**'
+
+jobs:
+  test-and-merge:
+    runs-on: ubuntu-latest
+    # As permissões ficam aqui dentro do job
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Garante que ele use o token com permissão de escrita no checkout
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Linter Analysis
+        run: flutter analyze
+
+        - name: Run Tests
+        run: |
+          if [ -d "test" ]; then
+            flutter test
+          else
+            echo "Nenhum diretório de testes encontrado. Pulando este passo..."
+          fi
+
+      - name: Merge to Staging
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # LIMPA QUALQUER MUDANÇA LOCAL (Como o pubspec.lock gerado no CI)
+          git reset --hard 
+
+          git fetch origin staging
+          git checkout staging
+          git merge origin/main --no-edit
+          git push origin staging

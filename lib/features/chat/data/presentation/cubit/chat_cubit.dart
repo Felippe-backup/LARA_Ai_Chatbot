@@ -30,8 +30,9 @@ class ChatCubit extends Cubit<ChatState> {
         if (convos.isEmpty) {
           final id = await repository.createConversation('Nova conversa');
           await repository.selectConversation(id);
-          if (kDebugMode)
+          if (kDebugMode) {
             print('[ChatCubit] created default conversation id=$id');
+          }
           // load messages (likely empty)
           final msgs = await repository.loadConversationMessages(id);
           _messages
@@ -47,8 +48,9 @@ class ChatCubit extends Cubit<ChatState> {
             ..clear()
             ..addAll(msgs);
           emit(ChatUpdated(messages: List.from(_messages), isTyping: false));
-          if (kDebugMode)
+          if (kDebugMode) {
             print('[ChatCubit] selected conversation id=${convos.first.id}');
+          }
         }
       } catch (e) {
         if (kDebugMode) print('[ChatCubit] conversation init error: $e');
