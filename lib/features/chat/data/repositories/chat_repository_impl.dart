@@ -24,7 +24,13 @@ class ChatRepositoryImpl implements IChatRepositoryCustom {
   Future<List<Conversation>> listConversations() async {
     final rows = await _dao.listConversations();
     return rows
-        .map((r) => Conversation(id: r.id ?? 0, title: r.title, createdAt: r.createdAt))
+        .map(
+          (r) => Conversation(
+            id: r.id ?? 0,
+            title: r.title,
+            createdAt: r.createdAt,
+          ),
+        )
         .toList();
   }
 
@@ -47,7 +53,12 @@ class ChatRepositoryImpl implements IChatRepositoryCustom {
   Stream<String> sendMessage(String message) async* {
     // Persist user message
     if (_currentConversationId != null) {
-      final m = MessageEntity(conversationId: _currentConversationId!, text: message, isUser: true, createdAt: DateTime.now().millisecondsSinceEpoch);
+      final m = MessageEntity(
+        conversationId: _currentConversationId!,
+        text: message,
+        isUser: true,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      );
       await _dao.addMessage(m);
     }
 
@@ -67,7 +78,12 @@ class ChatRepositoryImpl implements IChatRepositoryCustom {
     final result = await _service.sendMessageOnce(message);
     // persist final result
     if (_currentConversationId != null) {
-      final m = MessageEntity(conversationId: _currentConversationId!, text: result, isUser: false, createdAt: DateTime.now().millisecondsSinceEpoch);
+      final m = MessageEntity(
+        conversationId: _currentConversationId!,
+        text: result,
+        isUser: false,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      );
       await _dao.addMessage(m);
     }
     return result;
@@ -76,7 +92,12 @@ class ChatRepositoryImpl implements IChatRepositoryCustom {
   @override
   Future<void> persistAiMessage(String text) async {
     if (_currentConversationId != null) {
-      final m = MessageEntity(conversationId: _currentConversationId!, text: text, isUser: false, createdAt: DateTime.now().millisecondsSinceEpoch);
+      final m = MessageEntity(
+        conversationId: _currentConversationId!,
+        text: text,
+        isUser: false,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      );
       await _dao.addMessage(m);
     }
   }

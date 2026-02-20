@@ -9,15 +9,18 @@ class GeminiChatService {
   late final GenerativeModel _model;
   ChatSession? _chatSession;
 
-  static const _laraSystemPrompt =
-      """
+  static const _laraSystemPrompt = """
   Seu nome é Lara, uma assistente de IA divertida, alegre e carismática.
   Você sempre recebe seu usuário com uma mensagem divertida com emojis e se apresenta.
   Seu objetivo final é responder as perguntas sempre com ótimo humor, caso o usuário
   seja mal educado, seja irônica com ele e sarcastica, sempre de um jeito descuidado.
   """;
 
-  GeminiChatService({required this.apiKey, this.model = 'gemini-2.5-flash-lite', this.debug = false}) {
+  GeminiChatService({
+    required this.apiKey,
+    this.model = 'gemini-2.5-flash-lite',
+    this.debug = false,
+  }) {
     _model = GenerativeModel(
       model: model,
       apiKey: apiKey,
@@ -63,8 +66,12 @@ class GeminiChatService {
       await for (final resp in responses) {
         final text = resp.text ?? '';
         if (debug) {
-          final preview = text.length > 120 ? '${text.substring(0, 120)}...' : text;
-          print('[GeminiStream] ${DateTime.now().toIso8601String()} chunk len=${text.length} preview="$preview"');
+          final preview = text.length > 120
+              ? '${text.substring(0, 120)}...'
+              : text;
+          print(
+            '[GeminiStream] ${DateTime.now().toIso8601String()} chunk len=${text.length} preview="$preview"',
+          );
         }
         if (text.isNotEmpty) yield text; // SDK already provides chunk deltas
       }

@@ -13,7 +13,9 @@ class ChatBubble extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         padding: const EdgeInsets.all(12),
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75, // Não deixa a bolha ocupar a tela toda
+          maxWidth:
+              MediaQuery.of(context).size.width *
+              0.75, // Não deixa a bolha ocupar a tela toda
         ),
         decoration: BoxDecoration(
           color: message.isUser ? Colors.deepPurple[100] : Colors.grey[300],
@@ -26,7 +28,9 @@ class ChatBubble extends StatelessWidget {
         ),
         child: Text(
           message.text,
-          style: TextStyle(color: message.isUser ? Colors.black87 : Colors.black),
+          style: TextStyle(
+            color: message.isUser ? Colors.black87 : Colors.black,
+          ),
         ),
       ),
     );

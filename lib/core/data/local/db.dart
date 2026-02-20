@@ -18,8 +18,11 @@ class AppDatabase {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, 'lara_ai.db');
 
-    return await openDatabase(path, version: 1, onCreate: (db, version) async {
-      await db.execute('''
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
         CREATE TABLE conversations(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           title TEXT,
@@ -27,7 +30,7 @@ class AppDatabase {
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE messages(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           conversationId INTEGER,
@@ -37,7 +40,8 @@ class AppDatabase {
           FOREIGN KEY(conversationId) REFERENCES conversations(id) ON DELETE CASCADE
         )
       ''');
-    });
+      },
+    );
   }
 
   Future<void> close() async {
@@ -45,4 +49,3 @@ class AppDatabase {
     _db = null;
   }
 }
-

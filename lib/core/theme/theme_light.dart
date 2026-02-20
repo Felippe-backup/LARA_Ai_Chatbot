@@ -42,17 +42,16 @@ class AppThemeLight {
           fontWeight: FontWeight.w400, // Roboto-Regular
           color: AppColors.gray700,
         ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          color: AppColors.gray500,
-        ),
+        bodySmall: TextStyle(fontSize: 12, color: AppColors.gray500),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryMain,
           foregroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
           elevation: 0,
         ),
       ),

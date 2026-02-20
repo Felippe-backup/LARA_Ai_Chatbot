@@ -9,11 +9,12 @@ class ChatStreamHandler {
 
   /// Processa a mensagem completa (stream + fallback + throttle)
   Future<void> processMessage(
-      String text, {
-        required Function(String chunk) onChunkReceived,   // chamado a cada pedaço (throttled)
-        required Function(String fullResponse) onComplete,
-        required Function(String error) onError,
-      }) async {
+    String text, {
+    required Function(String chunk)
+    onChunkReceived, // chamado a cada pedaço (throttled)
+    required Function(String fullResponse) onComplete,
+    required Function(String error) onError,
+  }) async {
     String fullResponse = '';
     DateTime? lastEmit;
     StreamSubscription<String>? sub;
@@ -26,19 +27,24 @@ class ChatStreamHandler {
       final sendStart = DateTime.now();
 
       // Fallback
-      fallbackTimer = Timer(const Duration(seconds: 3, milliseconds: 500), () async {
-        if (!firstChunkArrived) {
-          if (kDebugMode) {
-            debugPrint('[StreamHandler] FALLBACK após ${DateTime.now().difference(sendStart).inMilliseconds}ms');
+      fallbackTimer = Timer(
+        const Duration(seconds: 3, milliseconds: 500),
+        () async {
+          if (!firstChunkArrived) {
+            if (kDebugMode) {
+              debugPrint(
+                '[StreamHandler] FALLBACK após ${DateTime.now().difference(sendStart).inMilliseconds}ms',
+              );
+            }
+            await _handleFallback(text, sub, streamDone, onComplete, onError);
           }
-          await _handleFallback(text, sub, streamDone, onComplete, onError);
-        }
-      });
+        },
+      );
 
       bool isFirstChunk = true;
 
       sub = stream.listen(
-            (chunk) {
+        (chunk) {
           if (!firstChunkArrived) {
             firstChunkArrived = true;
             fallbackTimer?.cancel();
@@ -52,7 +58,9 @@ class ChatStreamHandler {
           fullResponse += chunk;
 
           // Throttle de 60ms
-          if (lastEmit == null || DateTime.now().difference(lastEmit!) > const Duration(milliseconds: 60)) {
+          if (lastEmit == null ||
+              DateTime.now().difference(lastEmit!) >
+                  const Duration(milliseconds: 60)) {
             lastEmit = DateTime.now();
             onChunkReceived(fullResponse);
           }
@@ -86,12 +94,12 @@ class ChatStreamHandler {
   }
 
   Future<void> _handleFallback(
-      String text,
-      StreamSubscription? sub,
-      Completer<void> streamDone,
-      Function(String) onComplete,
-      Function(String) onError,
-      ) async {
+    String text,
+    StreamSubscription? sub,
+    Completer<void> streamDone,
+    Function(String) onComplete,
+    Function(String) onError,
+  ) async {
     try {
       await sub?.cancel();
       final finalText = await repository.sendMessageOnce(text);
@@ -113,7 +121,9 @@ class ChatStreamHandler {
   void _logTimeToFirstChunk(DateTime sendStart) {
     if (kDebugMode) {
       final elapsed = DateTime.now().difference(sendStart);
-      print('[StreamHandler] time to first chunk: ${elapsed.inMilliseconds} ms');
+      print(
+        '[StreamHandler] time to first chunk: ${elapsed.inMilliseconds} ms',
+      );
     }
   }
 }

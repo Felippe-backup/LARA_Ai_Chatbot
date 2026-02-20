@@ -101,16 +101,19 @@ class _ChatViewState extends State<ChatView> {
                 if (state is ChatUpdated) {
                   _vm.scrollToBottom(); // ← ViewModel cuida do scroll
                 } else if (state is ChatError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message)));
                 }
               },
               child: BlocBuilder<ChatCubit, ChatState>(
                 builder: (context, state) {
                   return ListView.builder(
                     controller: _vm.scrollController,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 8,
+                    ),
                     itemCount: _vm.messages.length,
                     itemBuilder: (context, index) {
                       final msg = _vm.messages[index];
@@ -129,7 +132,9 @@ class _ChatViewState extends State<ChatView> {
                               child: SizedBox(
                                 width: 12,
                                 height: 12,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               ),
                             ),
                         ],
@@ -168,7 +173,9 @@ class _ChatViewState extends State<ChatView> {
                   child: SizedBox(
                     width: 36,
                     height: 36,
-                    child: Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
+                    child: Center(
+                      child: CircularProgressIndicator(strokeWidth: 2.5),
+                    ),
                   ),
                 );
               }

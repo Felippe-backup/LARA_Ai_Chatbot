@@ -14,8 +14,8 @@ class ChatCubit extends Cubit<ChatState> {
   final List<ChatMessage> _messages = [];
 
   ChatCubit(this.repository)
-      : _handler = ChatStreamHandler(repository),
-        super(ChatInitial()) {
+    : _handler = ChatStreamHandler(repository),
+      super(ChatInitial()) {
     // try to warm up chat session to reduce first-response latency
     try {
       repository.initChat();
@@ -30,7 +30,8 @@ class ChatCubit extends Cubit<ChatState> {
         if (convos.isEmpty) {
           final id = await repository.createConversation('Nova conversa');
           await repository.selectConversation(id);
-          if (kDebugMode) print('[ChatCubit] created default conversation id=$id');
+          if (kDebugMode)
+            print('[ChatCubit] created default conversation id=$id');
           // load messages (likely empty)
           final msgs = await repository.loadConversationMessages(id);
           _messages
@@ -46,7 +47,8 @@ class ChatCubit extends Cubit<ChatState> {
             ..clear()
             ..addAll(msgs);
           emit(ChatUpdated(messages: List.from(_messages), isTyping: false));
-          if (kDebugMode) print('[ChatCubit] selected conversation id=${convos.first.id}');
+          if (kDebugMode)
+            print('[ChatCubit] selected conversation id=${convos.first.id}');
         }
       } catch (e) {
         if (kDebugMode) print('[ChatCubit] conversation init error: $e');
@@ -98,14 +100,20 @@ class ChatCubit extends Cubit<ChatState> {
 
   void _updateLastAIMessage(String fullText) {
     if (_messages.isNotEmpty) {
-      _messages[_messages.length - 1] = ChatMessage(text: fullText, isUser: false);
+      _messages[_messages.length - 1] = ChatMessage(
+        text: fullText,
+        isUser: false,
+      );
     }
     emit(ChatUpdated(messages: List.from(_messages), isTyping: true));
   }
 
   void _finalizeLastAIMessage(String fullText) async {
     if (_messages.isNotEmpty) {
-      _messages[_messages.length - 1] = ChatMessage(text: fullText, isUser: false);
+      _messages[_messages.length - 1] = ChatMessage(
+        text: fullText,
+        isUser: false,
+      );
     }
     emit(ChatUpdated(messages: List.from(_messages), isTyping: false));
 
@@ -114,9 +122,16 @@ class ChatCubit extends Cubit<ChatState> {
       final currentId = repository.currentConversationId;
       if (currentId != null) {
         final title = await repository.getConversationTitle(currentId);
-        final shouldUpdate = (title == null || title.isEmpty || title == 'Conversa' || title == 'Nova conversa');
+        final shouldUpdate =
+            (title == null ||
+            title.isEmpty ||
+            title == 'Conversa' ||
+            title == 'Nova conversa');
         if (shouldUpdate && _messages.isNotEmpty) {
-          final firstUser = _messages.firstWhere((m) => m.isUser, orElse: () => ChatMessage(text: '', isUser: true));
+          final firstUser = _messages.firstWhere(
+            (m) => m.isUser,
+            orElse: () => ChatMessage(text: '', isUser: true),
+          );
           final snippet = _makeSnippet(firstUser.text);
           await repository.updateConversationTitle(currentId, snippet);
         }
@@ -127,7 +142,8 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   // Optional: expose conversation helpers
-  Future<List> listConversations() async => await repository.listConversations();
+  Future<List> listConversations() async =>
+      await repository.listConversations();
 
   Future<int> createConversation(String title) async {
     final id = await repository.createConversation(title);

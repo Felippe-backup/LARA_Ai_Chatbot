@@ -21,7 +21,12 @@ class ConversationDao {
 
   Future<ConversationEntity?> getConversation(int id) async {
     final db = await _db.database;
-    final rows = await db.query('conversations', where: 'id = ?', whereArgs: [id], limit: 1);
+    final rows = await db.query(
+      'conversations',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
     if (rows.isEmpty) return null;
     return ConversationEntity.fromMap(rows.first);
   }
@@ -39,12 +44,22 @@ class ConversationDao {
 
   Future<List<MessageEntity>> getMessages(int conversationId) async {
     final db = await _db.database;
-    final rows = await db.query('messages', where: 'conversationId = ?', whereArgs: [conversationId], orderBy: 'createdAt ASC');
+    final rows = await db.query(
+      'messages',
+      where: 'conversationId = ?',
+      whereArgs: [conversationId],
+      orderBy: 'createdAt ASC',
+    );
     return rows.map((r) => MessageEntity.fromMap(r)).toList();
   }
 
   Future<void> updateConversationTitle(int id, String title) async {
     final db = await _db.database;
-    await db.update('conversations', {'title': title}, where: 'id = ?', whereArgs: [id]);
+    await db.update(
+      'conversations',
+      {'title': title},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }
