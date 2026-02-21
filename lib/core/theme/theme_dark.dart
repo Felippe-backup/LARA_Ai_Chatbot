@@ -45,7 +45,7 @@ class AppThemeDark {
         ),
         bodyLarge: TextStyle(
           fontSize: 16,
-          color: AppColors.textOnDark.withOpacity(0.9),
+          color: AppColors.textOnDark.withValues(alpha: 0.9),
         ),
         bodySmall: TextStyle(fontSize: 12, color: AppColors.gray400),
       ),

@@ -2,9 +2,19 @@
 setlocal enabledelayedexpansion
 
 echo --------------------------------------
-echo Limpando e formatando o codigo...
+echo [1/4] Limpando e formatando o codigo...
 call dart fix --apply
 call dart format .
+
+echo --------------------------------------
+echo [2/4] Rodando linter (flutter analyze)...
+call flutter analyze
+if %errorlevel% neq 0 (
+    echo.
+    echo [ERRO] O linter encontrou problemas. Corrija-os antes de subir.
+    pause
+    exit /b 1
+)
 
 :: Pega o nome da branch atual
 for /f "tokens=*" %%i in ('git rev-parse --abbrev-ref HEAD') do set BRANCH=%%i
@@ -13,16 +23,36 @@ echo --------------------------------------
 echo Branch atual: !BRANCH!
 set /p MESSAGE="Digite a mensagem do commit: "
 
-:: Se a mensagem for vazia, define um padrão
-if "!MESSAGE!"=="" set MESSAGE=Ajustes automaticos em %date% %time%
+:: Se a mensagem for vazia, cancela
+if "!MESSAGE!"=="" (
+    echo [ERRO] A mensagem de commit nao pode ser vazia.
+    pause
+    exit /b 1
+)
 
 echo --------------------------------------
-echo Enviando para o GitHub...
+echo [3/4] Preparando commit...
 
+:: Adiciona tudo
 git add .
+
+:: Tenta commitar. Se nao houver mudanças, o git avisa.
 git commit -m "!MESSAGE!"
+if %errorlevel% neq 0 (
+    echo [AVISO] Nada para commitar ou erro no commit.
+    pause
+    exit /b 0
+)
+
+echo --------------------------------------
+echo [4/4] Enviando para o GitHub (origin !BRANCH!)...
 git push origin !BRANCH!
 
-echo --------------------------------------
-echo Sucesso! Pipeline enviada para !BRANCH!.
+if %errorlevel% neq 0 (
+    echo [ERRO] Falha ao enviar para o GitHub. Verifique sua conexao ou conflitos.
+) else (
+    echo --------------------------------------
+    echo [SUCESSO] Pipeline finalizada para !BRANCH!.
+)
+
 pause

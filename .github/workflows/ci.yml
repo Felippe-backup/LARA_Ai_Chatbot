@@ -1,9 +1,10 @@
-name: Dev to Staging Auto-Merge
+name: LARA AI CI/CD
 
 on:
   push:
     branches:
       - 'dev/**'
+      - 'staging'
 
 jobs:
   test-and-merge:
@@ -18,6 +19,19 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check Branch Naming
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          if [[ ! $BRANCH_NAME =~ ^dev/POCL_[0-9]{3}_.*$ && $BRANCH_NAME != staging ]]; then
+            echo "Branch '$BRANCH_NAME' não segue convenção dev/POCL_XXX_*. Rejeitando."
+            exit 1
+          fi
+
+      - name: Create .env file
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "DEBUG_MODE=false" >> .env
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -28,39 +42,34 @@ jobs:
         run: flutter pub get
 
       - name: Linter Analysis
-        run: |
-          echo "Running flutter analyze..."
-          flutter analyze
+        run: flutter analyze
 
-      - name: Run Tests # CORRIGIDO: Alinhado corretamente com os outros '-'
+      - name: Run Tests
         run: |
           if [ -d "test" ]; then
             flutter test
           else
-            echo "Nenhum diretório de testes encontrado. Pulando este passo..."
+            echo "Nenhum diretório de testes encontrado. Pulando..."
           fi
 
-      # O passo de merge só deve rodar se os passos anteriores tiverem SUCESSO
-      - name: Merge to Staging
-        if: ${{ success() }}
+      - name: Merge Dev to Staging
+        if: startsWith(github.ref, 'refs/heads/dev/')
         run: |
-          echo "Previous checks passed. Merging to staging..."
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          git reset --hard 
-
-          # Pega o nome da branch atual que disparou o evento (ex: dev/feature-1)
-          CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-
+          git reset --hard
           git fetch origin staging
           git checkout staging
-
-          # Faz o merge da branch DEV atual para a STAGING
-          git merge origin/$CURRENT_BRANCH --no-edit
+          git merge $GITHUB_SHA --no-edit
           git push origin staging
 
-      - name: Skip Merge Notice
-        if: ${{ failure() }}
+      - name: Merge Staging to Main
+        if: github.ref == 'refs/heads/staging'
         run: |
-          echo "One or more checks failed (linter/tests). Merge to staging was skipped and the workflow failed."
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git reset --hard
+          git fetch origin main
+          git checkout main
+          git merge $GITHUB_SHA --no-edit
+          git push origin main

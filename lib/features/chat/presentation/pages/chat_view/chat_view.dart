@@ -63,12 +63,13 @@ class _ChatViewState extends State<ChatView> {
                 trailing: IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: () async {
+                    final navigator = Navigator.of(context);
                     // create a new conversation automatically
                     final id = await _vm.createConversation('Conversa');
                     await _loadConversations();
                     await _vm.selectConversation(id);
                     if (!mounted) return;
-                    Navigator.of(context).pop();
+                    navigator.pop();
                   },
                 ),
               ),
@@ -246,9 +247,7 @@ class _ChatViewState extends State<ChatView> {
                         hintText:
                             context.localization?.chat_inputHint ??
                             'sem hint aqui',
-                        hintStyle: context.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textOnDark.withOpacity(0.5),
-                        ),
+                        hintStyle: context.textTheme.bodyMedium,
                       ),
                       // Nota: onSubmitted em multiline não funciona via teclado (Enter pula linha)
                       // O envio deve ser pelo botão de Send
