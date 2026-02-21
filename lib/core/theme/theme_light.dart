@@ -37,6 +37,7 @@ class AppThemeLight {
           fontSize: 32,
           fontWeight: FontWeight.w900, // Roboto-Bold (Peso 900 no YAML)
           color: AppColors.gray900,
+          fontFamily: fontFamily,
         ),
 
         /// [FontSizes.headlineMedium]
@@ -44,6 +45,7 @@ class AppThemeLight {
           fontSize: 24,
           fontWeight: FontWeight.w700, // Roboto-SemiBold (Peso 700 no YAML)
           color: AppColors.primaryMain,
+          fontFamily: fontFamily,
         ),
 
         /// [FontSizes.bodyLarge]
@@ -51,10 +53,15 @@ class AppThemeLight {
           fontSize: 16,
           fontWeight: FontWeight.w400, // Roboto-Regular
           color: AppColors.gray700,
+          fontFamily: fontFamily,
         ),
 
         /// [FontSizes.bodySmall]
-        bodySmall: TextStyle(fontSize: 12, color: AppColors.gray500),
+        bodySmall: TextStyle(
+          fontSize: 12,
+          color: AppColors.gray500,
+          fontFamily: fontFamily,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

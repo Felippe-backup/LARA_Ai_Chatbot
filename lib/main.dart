@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           routerDelegate: Modular.routerDelegate,
+          routeInformationParser: Modular.routeInformationParser,
         ),
       ),
       child: SizedBox.shrink(),
