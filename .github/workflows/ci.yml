@@ -22,8 +22,8 @@ jobs:
       - name: Check Branch Naming
         run: |
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          if [[ ! $BRANCH_NAME =~ ^dev/POCL_[0-9]{3}_.*$ && $BRANCH_NAME != staging ]]; then
-            echo "Branch '$BRANCH_NAME' não segue convenção dev/POCL_XXX_*. Rejeitando."
+          if [[ ! $BRANCH_NAME =~ ^dev/LARA-[0-9]{3}-.*$ && $BRANCH_NAME != staging ]]; then
+            echo "Branch '$BRANCH_NAME' não segue convenção dev/LARA-XXX-*. Rejeitando."
             exit 1
           fi
 
