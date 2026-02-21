@@ -48,6 +48,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   flutter_modular: ^6.4.1
 
+  flutter_localizations: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

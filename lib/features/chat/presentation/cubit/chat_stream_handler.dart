@@ -56,8 +56,9 @@ class ChatStreamHandler {
             // Persist the user message only when the first chunk arrives
             // (indicating the AI started responding)
             repository.persistUserMessage(text).catchError((e) {
-              if (kDebugMode)
+              if (kDebugMode) {
                 debugPrint('[StreamHandler] persist user error: $e');
+              }
             });
           }
 
@@ -115,8 +116,9 @@ class ChatStreamHandler {
         await repository.persistUserMessage(text);
         await repository.persistAiMessage(finalText);
       } catch (e) {
-        if (kDebugMode)
+        if (kDebugMode) {
           debugPrint('[StreamHandler] persist fallback error: $e');
+        }
       }
       onComplete(finalText);
     } catch (e) {

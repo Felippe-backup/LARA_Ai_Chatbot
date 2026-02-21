@@ -28,7 +28,9 @@ jobs:
         run: flutter pub get
 
       - name: Linter Analysis
-        run: flutter analyze
+        run: |
+          echo "Running flutter analyze..."
+          flutter analyze
 
       - name: Run Tests # CORRIGIDO: Alinhado corretamente com os outros '-'
         run: |
@@ -38,8 +40,11 @@ jobs:
             echo "Nenhum diretório de testes encontrado. Pulando este passo..."
           fi
 
+      # O passo de merge só deve rodar se os passos anteriores tiverem SUCESSO
       - name: Merge to Staging
+        if: ${{ success() }}
         run: |
+          echo "Previous checks passed. Merging to staging..."
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -50,7 +55,12 @@ jobs:
 
           git fetch origin staging
           git checkout staging
-          
-          # CORRIGIDO: Faz o merge da branch DEV atual para a STAGING
+
+          # Faz o merge da branch DEV atual para a STAGING
           git merge origin/$CURRENT_BRANCH --no-edit
           git push origin staging
+
+      - name: Skip Merge Notice
+        if: ${{ failure() }}
+        run: |
+          echo "One or more checks failed (linter/tests). Merge to staging was skipped and the workflow failed."
