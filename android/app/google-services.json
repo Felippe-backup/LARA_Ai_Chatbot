@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "77580522292",
+    "project_id": "lara-ai-95e1a",
+    "storage_bucket": "lara-ai-95e1a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77580522292:android:bc3ae9af3b326765688b61",
+        "android_client_info": {
+          "package_name": "com.futuretech.lara.lara_ai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77580522292-c2oi7ses6cc4rfas8ajpuft1qttpj4mh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.futuretech.lara.lara_ai",
+            "certificate_hash": "5e81bc60c74872b0c5def4240149c77e51185a51"
+          }
+        },
+        {
+          "client_id": "77580522292-70jiqog1asjo3i8u7ke3bf9miefvdsl1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGQpawXgxtYWSlZn2Goz4x5cX1PLRUu_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77580522292-70jiqog1asjo3i8u7ke3bf9miefvdsl1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "77580522292-sn22et7d9sv91e2jhjdjo1gnerg2lfbi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.futuretech.lara.laraAi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

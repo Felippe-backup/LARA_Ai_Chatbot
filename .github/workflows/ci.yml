@@ -1,0 +1,138 @@
+name: LARA AI CI/CD
+
+on:
+  push:
+    branches:
+      - 'dev/**'
+      - 'staging'
+      - 'main'
+    # IGNORA disparos se a única mudança for em arquivos de texto ou docs
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+
+jobs:
+  test-and-merge:
+    name: Test and Auto-Merge
+    runs-on: ubuntu-latest
+    # Se o push for na main e NÃO for um merge (ex: edit direto no site), ele pula o job
+    if: |
+      github.ref != 'refs/heads/main' || 
+      (github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'Merge'))
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Branch Naming
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "staging" ]]; then
+            echo "Branch protegida '$BRANCH_NAME' detectada. Ignorando padrão de nomenclatura."
+            exit 0
+          fi
+          
+          if [[ ! $BRANCH_NAME =~ ^dev/LARA-[0-9]{3}_.*$ ]]; then
+            echo "Branch '$BRANCH_NAME' não segue convenção dev/LARA-XXX-*. Rejeitando."
+            exit 1
+          fi
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Linter Analysis
+        run: flutter analyze
+
+      - name: Run Tests
+        run: |
+          if [ -d "test" ]; then
+            flutter test
+          else
+            echo "Nenhum diretório de testes encontrado. Pulando..."
+          fi
+
+      - name: Merge Dev to Staging
+        if: startsWith(github.ref, 'refs/heads/dev/')
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin staging
+          git checkout staging
+          git merge $GITHUB_SHA --no-edit
+          git push origin staging
+
+      - name: Merge Staging to Main
+        if: github.ref == 'refs/heads/staging'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          git merge $GITHUB_SHA --no-edit
+          git push origin main
+
+  build-and-release:
+    name: Build and Release APK
+    needs: test-and-merge
+    # Só roda se o job anterior passou E se estamos na main (via merge automático)
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env for Build
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "DEBUG_MODE=false" >> .env
+
+      - name: Setup Ruby (Fastlane)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: android
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Generate l10n
+        run: flutter gen-l10n
+
+      - name: Build and Rename APK with Fastlane
+        run: bundle exec fastlane android build_for_release
+        working-directory: android
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: LARA AI Release v1.0.${{ github.run_number }}
+          draft: false
+          prerelease: false
+          files: build/app/outputs/flutter-apk/LARA_AI_v*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
