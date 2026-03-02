@@ -127,7 +127,7 @@ A LARA utiliza a API do **Google Gemini** com efeito de **Streaming**.
 
 ### 2. Instalação
 ```bash
-git clone https://github.com/Valtinho/lara_ai.git
+git clone https://github.com/Felippe-backup/LARA_Ai_Chatbot.git
 cd lara_ai
 flutter pub get
 ```
@@ -138,6 +138,14 @@ Crie um arquivo `.env` na raiz:
 API_KEY=SUA_CHAVE_AQUI
 ```
 Adicione o `google-services.json` em `android/app/`.
+
+---
+
+Defina o **.env** nos seus assets:
+```
+  assets:
+    - .env
+```
 
 ---
 
@@ -162,7 +170,7 @@ flutter test integration_test/app_test.dart
 Especialista em Desenvolvimento Mobile Flutter.
 
 - [LinkedIn](https://www.linkedin.com/in/felippe-pinheiro-dev-flutter/)
-- [GitHub](https://github.com/Valtinho)
+- [GitHub](https://github.com/Felippe-backup/LARA_Ai_Chatbot.git)
 
 ---
 Licença **MIT**.
